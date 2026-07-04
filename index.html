@@ -413,11 +413,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   const session=getSession();if(session&&session.nombreCompleto)mostrarVistaUsuario(session.nombreCompleto,session.profesion||'psicologo');
 });
 async function doLogin(){const username=document.getElementById('l-user').value.trim();const err=document.getElementById('l-error');const btn=document.getElementById('btn-login');if(!username){err.textContent='Ingresa tu usuario';return;}btn.disabled=true;btn.textContent='Verificando…';err.textContent='';try{const data=await fetchJSONP(`${SCRIPT_URL}?accion=login&username=${encodeURIComponent(username)}`);if(data.ok){saveSession({username:data.username,nombreCompleto:data.nombreCompleto,id:data.id,profesion:data.profesion||'psicologo'});mostrarVistaUsuario(data.nombreCompleto,data.profesion||'psicologo');}else err.textContent='Usuario no registrado. Contacta a la administración.';}catch(e){err.textContent='Error de conexión. Intenta de nuevo.';}finally{btn.disabled=false;btn.textContent='Entrar';}}
-var FOTO_ENTRADA="fotos/entrada.jpg",FOTO_CAFE="fotos/estacion-cafe.jpg",FOTO_CONSU1="fotos/consu1.jpg",FOTO_CONSU4="fotos/consu4.jpg";
+var FOTO_ENTRADA="fotos/entrada.jpg",FOTO_CAFE="fotos/estacion-cafe.jpg",FOTO_CONSU1="fotos/consu1.jpg",FOTO_CONSU3A="fotos/consu3a.jpg",FOTO_CONSU3B="fotos/consu3b.jpg",FOTO_CONSU4="fotos/consu4.jpg";
 function switchUserTab(tab){var tabs=['agenda','espacio'];document.querySelectorAll('#vista-usuario .atab').forEach(function(b,i){b.classList.toggle('active',tabs[i]===tab);});tabs.forEach(function(t){document.getElementById('tab-user-'+t).classList.toggle('active',t===tab);});}
 var FOTOS_ESPACIO=[];
 function renderEspacio(){
-  FOTOS_ESPACIO=[{img:FOTO_ENTRADA,t:'Entrada'},{img:FOTO_CAFE,t:'Estación de café'},{img:FOTO_CONSU1,t:'Consultorio 1'},{img:FOTO_CONSU4,t:'Consultorio 4'}];
+  FOTOS_ESPACIO=[{img:FOTO_ENTRADA,t:'Entrada'},{img:FOTO_CAFE,t:'Estación de café'},{img:FOTO_CONSU1,t:'Consultorio 1'},{img:FOTO_CONSU3A,t:'Consultorio 3'},{img:FOTO_CONSU3B,t:'Consultorio 3'},{img:FOTO_CONSU4,t:'Consultorio 4'}];
   document.getElementById('espacio-grid').innerHTML=FOTOS_ESPACIO.map(function(f,i){return '<div style="background:var(--white);border:1px solid var(--cream-dark);border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(20,28,40,.06);"><img src="'+f.img+'" alt="'+f.t+'" onclick="abrirFoto('+i+')" style="width:100%;height:240px;object-fit:cover;display:block;cursor:zoom-in;"><div style="padding:.85rem 1rem;font-family:\'Playfair Display\',serif;font-size:1.05rem;color:var(--ink);">'+f.t+'</div></div>';}).join('');
 }
 function abrirFoto(i){

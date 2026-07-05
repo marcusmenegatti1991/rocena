@@ -374,7 +374,7 @@
 <div class="toast" id="toast"></div>
 <script>
 // CONFIG — por ahora usa el backend de Casa Amatista (ya operativo) para que veas Rocena funcionando.
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb7mvPvsIxZmarJiFRxSSXYSIWsI8Gel3JMFbOvP6D75x2CqFRpBkylowQP7U__Y0v/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyId0E4UyU34aOyuapUvxKTvGLpEOnxpMMCb2cwg2j2vkdGBYQBtlI2tB6zRE_em8xU/exec';
 const CALENDARIOS = {
   'consultorio-1':'8189f30a27f4ef937e13e9f07d406a9813e9d912798f0e295b1ce54b49f2e630@group.calendar.google.com',
   'consultorio-3':'4cb125d61ae91ae21615b088521ec82f6ed8bc04e5c30c2ff82900a28bb61ebf@group.calendar.google.com',
@@ -499,7 +499,7 @@ function renderCorte(){
 async function borrarPago(id,calEnc){
   var ev=todosLosEventos.find(function(e){return e.id===id;});if(!ev)return;
   if(!confirm('¿Borrar el pago/cita de '+primerNombre(ev.nombreBase)+' del '+fmtCorta(ev.inicio.slice(0,10))+' '+horaLeg(ev.inicio)+'?\n\nSe quita del corte y se borra del calendario.'))return;
-  try{var r=await fetchJSONP(`${SCRIPT_URL}?accion=eliminarEvento&eventoId=${encodeURIComponent(id)}&calendarioId=${calEnc}&inicio=${encodeURIComponent(ev.inicio)}`);if(r&&r.ok===false){showToast(r.error||'No se pudo borrar','error');return;}if(r&&r.borrado===false){showToast('No se encontró la cita en el calendario','error');return;}showToast('Pago/cita borrado','success');cargarAdmin();}catch(e){showToast('Error: '+e.message,'error');}
+  try{var r=await fetchJSONP(`${SCRIPT_URL}?accion=borrarPago&eventoId=${encodeURIComponent(id)}&calendarioId=${calEnc}&inicio=${encodeURIComponent(ev.inicio)}`);if(r&&r.ok===false){showToast(r.error||'No se pudo borrar','error');return;}showToast('Pago borrado','success');cargarAdmin();}catch(e){showToast('Error: '+e.message,'error');}
 }
 function esSary(ev){const n=normNombre(ev.nombreBase||'');return n==='SARY'||n.startsWith('SARY - ');}
 function renderTotales(){const rentas=todosLosEventos.filter(ev=>!esSary(ev));const totalRentas=rentas.reduce((s,ev)=>{if(ev.estado==='asistio')return s+(ev.monto||TARIFA_ASISTIO);if(ev.estado==='cancelo')return s+TARIFA_CANCELO;if(ev.estado==='descuento')return s+(ev.monto||0);return s;},0);document.getElementById('total-rentas').textContent=`$${totalRentas.toLocaleString('es-MX')}`;document.getElementById('total-rentas-sub').textContent=`${rentas.length} citas de profesionales`;document.getElementById('totales-grid').style.display='grid';}

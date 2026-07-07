@@ -384,7 +384,8 @@ const CALENDARIOS = {
   'consultorio-4':'18e3acc512afa7e0c208b997d8713317acdc035d0043a4ac18f7dc06de578192@group.calendar.google.com',
 };
 const NOMBRES={'consultorio-1':'Consultorio 1','consultorio-3':'Consultorio 3','consultorio-4':'Consultorio 4'};
-const ADMIN_PASSWORD='rocena2024';
+const ADMIN_PASSWORD_HASH='56deb2a448de124e63534f867eed04bdae10c28c5b7dd80a1dc10736da8a6bc3'; // SHA-256 de la clave (no texto plano)
+async function sha256hex(str){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
 let TARIFA_ASISTIO=550; const TARIFA_CANCELO=30;
 const H_INI=8, H_FIN=20;
 const SESSION_KEY='rocena_session';
@@ -457,7 +458,7 @@ function getInitials(nombre){return nombre.split(' ').map(n=>n[0]).join('').toUp
 function cargarEquipo(){const grid=document.getElementById('equipo-grid');if(!EQUIPO.length){grid.innerHTML='<div class="admin-empty">El equipo de Rocena se mostrará aquí.</div>';return;}grid.innerHTML=EQUIPO.map(p=>`<div class="team-card"><div class="team-photo"><div class="team-initials">${getInitials(p.nombre)}</div></div><div class="team-info"><div class="team-nombre">${p.nombre}</div><span class="team-prof">${p.prof}</span></div></div>`).join('');}
 function mostrarLoginAdmin(){document.getElementById('admin-pw').value='';document.getElementById('admin-error').style.display='none';document.getElementById('modal-admin').classList.add('open');setTimeout(()=>document.getElementById('admin-pw').focus(),200);}
 function cerrarLoginAdmin(){document.getElementById('modal-admin').classList.remove('open');}
-async function verificarAdmin(){if(document.getElementById('admin-pw').value!==ADMIN_PASSWORD){document.getElementById('admin-error').style.display='block';return;}cerrarLoginAdmin();document.getElementById('login-screen').style.display='none';document.getElementById('vista-usuario').style.display='none';document.getElementById('admin-panel').style.display='block';try{const r=await fetchJSONP(`${SCRIPT_URL}?accion=inicializar`);if(r.ok&&r.total>0&&r.mensaje==='Psicólogos cargados'){document.getElementById('init-box').classList.add('show');setTimeout(()=>document.getElementById('init-box').classList.remove('show'),4000);}}catch(_){}cargarConfig();cargarListaPsicologos();cargarAdmin();}
+async function verificarAdmin(){if((await sha256hex(document.getElementById('admin-pw').value))!==ADMIN_PASSWORD_HASH){document.getElementById('admin-error').style.display='block';return;}cerrarLoginAdmin();document.getElementById('login-screen').style.display='none';document.getElementById('vista-usuario').style.display='none';document.getElementById('admin-panel').style.display='block';try{const r=await fetchJSONP(`${SCRIPT_URL}?accion=inicializar`);if(r.ok&&r.total>0&&r.mensaje==='Psicólogos cargados'){document.getElementById('init-box').classList.add('show');setTimeout(()=>document.getElementById('init-box').classList.remove('show'),4000);}}catch(_){}cargarConfig();cargarListaPsicologos();cargarAdmin();}
 function salirAdmin(){document.getElementById('admin-panel').style.display='none';const session=getSession();if(session)mostrarVistaUsuario(session.nombreCompleto);else document.getElementById('login-screen').style.display='flex';}
 function switchAdminTab(tab){citaSeleccionada=null;const tabs=['agenda','psicologos','horarios'];document.querySelectorAll('#admin-panel .atab').forEach((b,i)=>b.classList.toggle('active',tabs[i]===tab));tabs.forEach(t=>document.getElementById(`tab-${t}`).classList.toggle('active',t===tab));if(tab==='horarios')cargarHorarios();}
 let todosLosEventos=[],estadosMap={},semanaOffset=0,fechaIniAdmin='',fechaFinAdmin='';
